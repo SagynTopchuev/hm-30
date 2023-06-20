@@ -1,20 +1,113 @@
-import { styled, Fab } from '@mui/material'
+import { styled, Fab, Grid, IconButton } from '@mui/material'
 import { AdminHeader } from './AdminHeader'
 import { AdminTable } from './AdminTable'
 import AddIcon from '@mui/icons-material/Add'
+import { useDispatch } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { AppDispatch } from '../../store'
+import { getFoods } from '../../store/meals/meals.thunk'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { IColumnTable, IEditFormValues, IMeals } from '../../common/types/types'
+import { deleteAdminFoods } from '../../store/admin/admin.thunk'
+import { ActionsTypeSnackbar } from '../../store/snackbar/snackbar.slice'
+import { useSearchParams } from 'react-router-dom'
+import MealModal from './MealModal'
 
 export const AdminLayout = () => {
+  const [editData, setEditData] = useState<IEditFormValues>()
+  const dispatch = useDispatch<AppDispatch>()
+  const [open, setOpen] = useSearchParams()
+
+  const closeModal = () => {
+    open.delete('modal')
+    open.delete('mealId')
+    setOpen(open)
+  }
+
+  const openModalHandler = (mode: string) => {
+    open.set('modal', mode)
+    setOpen(open)
+  }
+
+  const deleteAdminFoodsHandler = async (id: string) => {
+    try {
+      const response = await dispatch(deleteAdminFoods(id)).unwrap()
+      const data: string = response.data.message
+
+      dispatch(ActionsTypeSnackbar.doSuccess(data))
+    } catch (error) {
+      if (error instanceof Error && error.message) {
+        dispatch(ActionsTypeSnackbar.doError(error.message))
+      } else {
+        dispatch(ActionsTypeSnackbar.doError('Something went wrong'))
+      }
+    }
+  }
+
+  const editMealHandler = (data: IMeals) => {
+    setEditData(data)
+    openModalHandler('edit')
+    open.set('mealId', data._id)
+    setOpen(open)
+  }
+
+  const columns: IColumnTable[] = [
+    {
+      header: '№',
+      key: '_id',
+      index: true,
+    },
+    {
+      header: 'Title',
+      key: 'title',
+    },
+    {
+      header: 'Description',
+      key: 'description',
+      fontWeight: 400,
+    },
+    {
+      header: 'Price',
+      key: 'price',
+      color: '#ad5502',
+      number: true,
+      fontWeight: 600,
+    },
+    {
+      header: 'Actions',
+      key: 'actions',
+      render: (meal) => {
+        return (
+          <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
+            <IconButton onClick={() => editMealHandler(meal)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => deleteAdminFoodsHandler(meal._id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Grid>
+        )
+      },
+    },
+  ]
+
+  useEffect(() => {
+    dispatch(getFoods())
+  }, [dispatch])
+
   return (
     <>
+      <MealModal open={open} onClose={closeModal} editData={editData} />
       <AdminHeader />
 
       <main style={{ marginTop: '120px' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <AdminTable />
+          <AdminTable columns={columns} />
         </div>
         <AddContainer>
           <ContainerIcon
-            // onClick={() => openModalHandler('add)}
+            onClick={() => openModalHandler('add')}
             color="primary"
             aria-label="add"
           >

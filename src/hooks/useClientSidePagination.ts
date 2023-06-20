@@ -1,4 +1,5 @@
 import { useState, ChangeEvent } from 'react'
+import { IColumnTable, IMeals } from '../common/types/types'
 
 export const useClientSidePagination = () => {
   const [page, setPage] = useState(0)
@@ -14,7 +15,7 @@ export const useClientSidePagination = () => {
     setRowsPerPage(parseInt(event.target.value, 10))
   }
 
-  const paginate = (rows: IRowsTable[]) => {
+  const paginate = (rows: IMeals[]) => {
     return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
   }
 
@@ -43,7 +44,7 @@ export const useClientSidePagination = () => {
   const resultAdminMeals = (
     column: IColumnTable,
     rowIndex: number,
-    row: IRowsTable
+    row: IMeals
   ) => {
     const value = column.index ? rowIndex + 1 : row[column.key]
 
@@ -55,7 +56,7 @@ export const useClientSidePagination = () => {
   const resultAdminOrders = (
     column: IColumnTable,
     rowIndex: number,
-    row: IRowsTable
+    row: IMeals
   ) => {
     const value = column.index ? rowIndex + 1 : row[column.key]
 

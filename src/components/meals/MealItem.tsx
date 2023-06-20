@@ -1,11 +1,37 @@
 import { styled } from '@mui/material'
 import { MealsItemForm } from './MealsItemForm'
+import { IMeals } from '../../common/types/types'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../store'
+import { ActionsTypeSnackbar } from '../../store/snackbar/snackbar.slice'
+import { addItem } from '../../store/meals/meals.thunk'
 
 interface MealItemType {
   item: IMeals
 }
 
 export const MealItem = ({ item }: MealItemType) => {
+  const dispatch = useDispatch<AppDispatch>()
+
+  const addBasket = async (amount: number) => {
+    try {
+      await dispatch(
+        addItem({
+          id: item._id,
+          amount: amount,
+        })
+      ).unwrap()
+
+      dispatch(ActionsTypeSnackbar.doSuccess('Successfully'))
+    } catch (error) {
+      if (error instanceof Error && error.message) {
+        dispatch(ActionsTypeSnackbar.doError(error.message))
+      } else {
+        dispatch(ActionsTypeSnackbar.doError('Something went wrong'))
+      }
+    }
+  }
+
   return (
     <StyledItem key={item._id}>
       <StyledItemInfo>
@@ -14,8 +40,8 @@ export const MealItem = ({ item }: MealItemType) => {
         <span>{item.price} $</span>
       </StyledItemInfo>
       <div>
-        {/* addItemHandler={addItemHandler} */}
-        <MealsItemForm id={item._id} />
+        {/* */}
+        <MealsItemForm addItemHandler={addBasket} />
       </div>
     </StyledItem>
   )

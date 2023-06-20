@@ -1,14 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
-interface IRowsTable {
-  _id: string
+
+export interface IFormValues {
   title: string
   description: string
   price: number
+}
+
+export interface IEditFormValues extends IFormValues {
+  _id: string | null
+}
+
+export interface IMeals {
+  amount: number
+  _id: string
+  description: string
+  price: number
+  title: string
   [key: string]: number | string
 }
 
-interface IColumnTable {
+export interface IColumnTable {
   header: string
   key: string
   index?: boolean
@@ -16,26 +28,38 @@ interface IColumnTable {
   fontWeight?: number
   color?: string
   number?: boolean
-  render?: (meal: IRowsTable) => JSX.Element
+  render?: (meal: IMeals) => JSX.Element
 }
 
-interface IMeals {
-  // id: string
-  // title: string
-  // description: string
-  // price: number
-
-  _id: string
-  description: string
-  price: number
-  title: string
-  createdAt?: string
-  updatedAt?: string
-  __v?: number
+export enum ROLES {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  GUEST = 'GUEST',
 }
 
-enum USER_ROLE {
-  'ADMIN',
-  'USER',
-  'GUEST',
+export interface ISignInResponse {
+  data: {
+    token: string
+
+    user: {
+      email: string
+      name: string
+      role: string
+    }
+  }
+}
+
+export interface ISignUp {
+  name: string
+  email: string
+  role: ROLES
+  password: string
+  confirm?: string
+}
+
+export type ISignIn = Omit<ISignUp, 'name' | 'role'>
+
+export interface IAddItemRequest {
+  amount: number
+  id: string
 }

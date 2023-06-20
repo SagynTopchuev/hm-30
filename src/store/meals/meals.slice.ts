@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { getFoods } from './mealsThunk'
+import { IMeals } from '../../common/types/types'
+import { getFoods } from './meals.thunk'
 
 interface initialType {
   isLoading: boolean

@@ -4,7 +4,7 @@ import { Card } from '../UI/Card'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../../store'
 import { useEffect } from 'react'
-import { getFoods } from '../../store/meals/mealsThunk'
+import { getFoods } from '../../store/meals/meals.thunk'
 
 export const Meals = () => {
   const { meals } = useSelector((state: RootState) => state.meals)

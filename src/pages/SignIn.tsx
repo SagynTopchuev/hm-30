@@ -1,13 +1,15 @@
 import { TextField, styled, Button, Typography } from '@mui/material'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import InputPassword from '../components/UI/InputPassword'
-// import InputPassword from '../components/UI/InputPassword/InputPassword'
-// import { signIn } from '../store/auth/authThunk'
-// import { ActionsTypeSnackbar } from '../store/snackbar/snackbar'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../store'
+import { signIn } from '../store/auth/auth.thunk'
+import { ISignIn } from '../common/types/types'
+import { ActionsTypeSnackbar } from '../store/snackbar/snackbar.slice'
 
 const schema = z.object({
   email: z.string().email('Incorrect E-Mail Address'),
@@ -15,21 +17,22 @@ const schema = z.object({
 })
 
 export const SignIn = () => {
-  // const dispatch = useDispatch()
-  // const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
 
-  const submitHandler = async () => {
-    //   try {
-    //     await dispatch(signIn(values)).unwrap()
-    //     navigate('/')
-    //     dispatch(ActionsTypeSnackbar.doSuccess())
-    //   } catch (error) {
-    //     dispatch(
-    //       ActionsTypeSnackbar.doError(
-    //         error ? error.response.data.message : 'Something went wrong'
-    //       )
-    //     )
-    //   }
+  const submitHandler = async (values: ISignIn) => {
+    try {
+      await dispatch(signIn(values)).unwrap()
+      navigate('/')
+
+      dispatch(ActionsTypeSnackbar.doSuccess('Successfully'))
+    } catch (error) {
+      if (error instanceof Error && error.message) {
+        dispatch(ActionsTypeSnackbar.doError(error.message))
+      } else {
+        dispatch(ActionsTypeSnackbar.doError('Something went wrong'))
+      }
+    }
   }
 
   const { handleSubmit, register, formState } = useForm({

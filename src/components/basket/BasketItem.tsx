@@ -1,34 +1,34 @@
+/* eslint-disable no-unused-vars */
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import { styled } from '@mui/material'
-// import { BasketType } from '../../store/basket/basketThunk'
+import { IMeals } from '../../common/types/types'
 
 interface PropsBasketItems {
   item: IMeals
-  // incrementFoodHandler: (item: BasketType) => void
-  // decrementFoodHandler: (item: BasketType) => void
+  incrementFoodHandler: (item: IMeals) => void
+  decrementFoodHandler: (item: IMeals) => void
 }
 
 export const BasketItem = ({
   item,
-}: // incrementFoodHandler,
-// decrementFoodHandler,
-PropsBasketItems) => {
+  incrementFoodHandler,
+  decrementFoodHandler,
+}: PropsBasketItems) => {
   return (
     <Container>
       <Title>{item.title}</Title>
       <Content>
         <PriceAndAmountContainer>
           <Price>${item.price}</Price>
-          <Amount>x1</Amount>
+          <Amount>x {item.amount}</Amount>
         </PriceAndAmountContainer>
         <CounterContainer>
-          {/*  onClick={() => decrementFoodHandler(item)} */}
-          <ContainerStyleMinusBasket>
+          <ContainerStyleMinusBasket onClick={() => decrementFoodHandler(item)}>
             <RemoveIcon />
           </ContainerStyleMinusBasket>
-          {/* onClick={() => incrementFoodHandler(item)} */}
-          <ContainerStylePlusBasket>
+
+          <ContainerStylePlusBasket onClick={() => incrementFoodHandler(item)}>
             <AddIcon />
           </ContainerStylePlusBasket>
         </CounterContainer>

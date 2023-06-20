@@ -1,19 +1,44 @@
 import { Modal, Box } from '@mui/material'
 import { styled } from '@mui/material'
-
 import { BasketItem } from './BasketItem'
 import { TotalAmount } from './TotalAmount'
 import { Loading } from '../UI/Loading'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../../store'
+import { decrementFood, incrementFood } from '../../store/basket/basket.thunk'
+import { IAddItemRequest, IMeals } from '../../common/types/types'
 
 interface PropsBasket {
   onClose: () => void
   open: boolean
 }
 
-const items: IMeals[] = []
-
 export const Basket = ({ onClose, open }: PropsBasket) => {
-  const isLoading = false
+  const dispatch = useDispatch<AppDispatch>()
+  const { basket, isLoading } = useSelector((state: RootState) => state.basket)
+
+  const totalPrice = basket?.reduce(
+    (prev, current) => prev + +current.price.toFixed(2) * current.amount,
+    0
+  )
+
+  const incrementFoodHandler = (data: IMeals) => {
+    const newData: IAddItemRequest = {
+      id: data._id,
+      amount: data.amount,
+    }
+
+    dispatch(incrementFood(newData))
+  }
+
+  const decrementFoodHandler = (data: IMeals) => {
+    const newData: IAddItemRequest = {
+      id: data._id,
+      amount: data.amount - 1,
+    }
+
+    dispatch(decrementFood(newData))
+  }
 
   return (
     <>
@@ -21,21 +46,21 @@ export const Basket = ({ onClose, open }: PropsBasket) => {
       <Modal onClose={onClose} open={open}>
         <StyledModalContent>
           <Content>
-            {items?.length ? (
+            {basket?.length ? (
               <FixedWidthContainer>
-                {items.map((item) => {
+                {basket.map((item) => {
                   return (
                     <BasketItem
                       key={item._id}
                       item={item}
-                      // incrementFoodHandler={incrementFoodHandler}
-                      // decrementFoodHandler={decrementFoodHandler}
+                      incrementFoodHandler={incrementFoodHandler}
+                      decrementFoodHandler={decrementFoodHandler}
                     />
                   )
                 })}
               </FixedWidthContainer>
             ) : null}
-            <TotalAmount toggleHandler={onClose} totalPrice={120} />
+            <TotalAmount toggleHandler={onClose} totalPrice={totalPrice} />
           </Content>
         </StyledModalContent>
       </Modal>

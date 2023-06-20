@@ -1,9 +1,14 @@
 import { Button, TextField, Typography, styled } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import InputPassword from '../components/UI/InputPassword'
+import { ISignUp, ROLES } from '../common/types/types'
+import { ActionsTypeSnackbar } from '../store/snackbar/snackbar.slice'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../store'
+import { signUp } from '../store/auth/auth.thunk'
 
 const schema = z
   .object({
@@ -19,30 +24,34 @@ const schema = z
   })
 
 export const SignUp = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
+
   const { handleSubmit, register, formState } = useForm({
     defaultValues: {
       name: '',
       email: '',
       password: '',
       confirm: '',
-      role: USER_ROLE.USER,
+      role: ROLES.USER,
     },
     mode: 'onChange',
     resolver: zodResolver(schema),
   })
 
-  const submitHandler = async () => {
-    // try {
-    //   await dispatch(signUp(values)).unwrap()
-    //   navigate('/signIn')
-    //   dispatch(ActionsTypeSnackbar.doSuccess())
-    // } catch (error) {
-    //   dispatch(
-    //     ActionsTypeSnackbar.doError(
-    //       error ? error.response.data.message : 'Something went wrong'
-    //     )
-    //   )
-    // }
+  const submitHandler = async (values: ISignUp) => {
+    try {
+      await dispatch(signUp(values)).unwrap()
+      navigate('/signIn')
+
+      dispatch(ActionsTypeSnackbar.doSuccess('Successfully'))
+    } catch (error) {
+      if (error instanceof Error && error.message) {
+        dispatch(ActionsTypeSnackbar.doError(error.message))
+      } else {
+        dispatch(ActionsTypeSnackbar.doError('Something went wrong'))
+      }
+    }
   }
 
   return (
@@ -135,12 +144,11 @@ export const SignUp = () => {
 const Container = styled('div')`
   margin: 0 auto;
   width: 500px;
-  padding-top: 60px;
+  padding: 60px;
 `
 
 const Box = styled('div')`
   width: 500px;
-  height: 500px;
   background-color: #fff;
   padding: 20px;
   border-radius: 6px;

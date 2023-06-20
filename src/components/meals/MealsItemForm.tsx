@@ -5,16 +5,10 @@ import { MouseEvent } from 'react'
 import { Button } from '../UI/Button'
 
 interface PropsMealsItemForm {
-  // addItemHandler: (amount: number, id: string) => void
-  id: string
+  addItemHandler: (amount: number) => void
 }
 
-{
-  // addItemHandler,
-  // id,
-}
-
-export const MealsItemForm = ({ id }: PropsMealsItemForm) => {
+export const MealsItemForm = ({ addItemHandler }: PropsMealsItemForm) => {
   const [amount, setAmount] = useState(1)
 
   const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +20,7 @@ export const MealsItemForm = ({ id }: PropsMealsItemForm) => {
   ) => {
     event.preventDefault()
 
-    // addItemHandler(+amount, id)
+    addItemHandler(+amount)
   }
 
   return (

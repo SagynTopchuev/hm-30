@@ -1,6 +1,4 @@
 import {
-  Grid,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -11,53 +9,16 @@ import {
   TableRow,
   styled,
 } from '@mui/material'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { rows } from '../../common/utils/constants'
 import { useClientSidePagination } from '../../hooks/useClientSidePagination'
+import { IColumnTable, IMeals } from '../../common/types/types'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
 
-const columns: IColumnTable[] = [
-  {
-    header: '№',
-    key: '_id',
-    index: true,
-  },
-  {
-    header: 'Title',
-    key: 'title',
-  },
-  {
-    header: 'Description',
-    key: 'description',
-    fontWeight: 400,
-  },
-  {
-    header: 'Price',
-    key: 'price',
-    color: '#ad5502',
-    number: true,
-    fontWeight: 600,
-  },
-  {
-    header: 'Actions',
-    key: 'actions',
-    render: (meal) => {
-      return (
-        <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
-          <IconButton>
-            {/* onClick={() => {}} */}
-            <EditIcon />
-          </IconButton>
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Grid>
-      )
-    },
-  },
-]
+interface IProps {
+  columns: IColumnTable[]
+}
 
-export const AdminTable = () => {
+export const AdminTable = ({ columns }: IProps) => {
   const {
     styleBodyMeals,
     styleHeaderMeals,
@@ -69,7 +30,9 @@ export const AdminTable = () => {
     handleChangeRowsPerPage,
   } = useClientSidePagination()
 
-  const id = (id: IRowsTable) => {
+  const { meals } = useSelector((state: RootState) => state.meals)
+
+  const id = (id: IMeals) => {
     return id._id
   }
 
@@ -94,7 +57,7 @@ export const AdminTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {paginate(rows).map((row, rowIndex) => {
+              {paginate(meals).map((row, rowIndex) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={id(row)}>
                     {columns.map((column) => {
@@ -127,7 +90,7 @@ export const AdminTable = () => {
             rowsPerPageOptions={[8, 12, 100]}
             sx={{ fontSize: '1.2rem' }}
             component="div"
-            count={rows.length}
+            count={meals.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={(e, newPage) => handleChangePage(newPage)}

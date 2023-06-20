@@ -1,6 +1,8 @@
 import { styled } from '@mui/material'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import { ReactNode } from 'react'
+import { RootState } from '../../store'
+import { useSelector } from 'react-redux'
 
 interface PropsOrderBasket {
   toggleHandler: () => void
@@ -13,23 +15,18 @@ export const OrderBasket = ({
   toggleHandler,
   className,
 }: PropsOrderBasket) => {
-  // const { items } = useSelector((state: RootState) => state.basket)
-  // const dispatch = useDispatch<AppDispatch>()
+  const { basket } = useSelector((state: RootState) => state.basket)
 
-  // useEffect(() => {
-  // dispatch(getBasket())
-  // }, [dispatch])
-
-  // const totalAmount = items?.reduce(
-  //   (prev, current) => prev + (current.amount ?? 0),
-  //   0
-  // )
+  const totalAmount = basket?.reduce(
+    (prev, current) => prev + current.amount,
+    0
+  )
 
   return (
     <Button className={className} onClick={toggleHandler}>
       <BasketIcon />
       <OrderBasketTitle>{children}</OrderBasketTitle>
-      <OrderBasketCount>{0}</OrderBasketCount>
+      <OrderBasketCount>{totalAmount}</OrderBasketCount>
     </Button>
   )
 }

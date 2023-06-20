@@ -1,12 +1,20 @@
 import { styled } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { OrderBasket } from './OrderBasket'
+import { Button } from '../UI/Button'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../../store'
+import { useNavigate } from 'react-router-dom'
+import { logOut } from '../../store/auth/auth.thunk'
 
 interface PropsHeader {
   toggleHandler: () => void
 }
 
 export const Header = ({ toggleHandler }: PropsHeader) => {
+  const { isAuthorization } = useSelector((state: RootState) => state.auth)
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
   const [animationClass, setAnimationClass] = useState('')
 
   const plusAnimation = () => {
@@ -21,6 +29,14 @@ export const Header = ({ toggleHandler }: PropsHeader) => {
     }
   }
 
+  const navigateToSignIn = () => {
+    navigate('signIn')
+  }
+
+  const logOutHandler = () => {
+    dispatch(logOut())
+  }
+
   useEffect(() => {
     plusAnimation()
   }, [])
@@ -28,10 +44,21 @@ export const Header = ({ toggleHandler }: PropsHeader) => {
   return (
     <HeaderStyle>
       <Container>
-        <Logo>React Meals</Logo>
+        <Logo style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+          React Meals
+        </Logo>
         <OrderBasket className={animationClass} toggleHandler={toggleHandler}>
           Your Cart
         </OrderBasket>
+        {!isAuthorization ? (
+          <Button variants="contained" onClick={navigateToSignIn}>
+            Sign In
+          </Button>
+        ) : (
+          <Button variants="contained" onClick={logOutHandler}>
+            Log Out
+          </Button>
+        )}
       </Container>
     </HeaderStyle>
   )
